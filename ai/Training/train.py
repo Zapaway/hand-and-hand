@@ -1,33 +1,31 @@
 import tensorflow as tf
 import numpy as np
+from object_detection.utils import visualization_utils as viz_utils
+import cv2
 import os
 
-print(os.getcwd())
-# from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as viz_utils
+PATH = os.getcwd()
+if os.path.exists(PATH):
+    model = tf.saved_model.load(PATH)
+else:
+    raise Exception("Model is missing!")
 
-# Load the model
-model = tf.saved_model.load('saved_model.pb')
+image_path = "hand.jpg"
+image_np = cv2.imread(image_path)
+if image_np is None:
+    raise Exception(f"Image {image_path} not found!")
 
-# Load the label map
-# category_index = label_map_util.create_category_index_from_labelmap('.../label_map.pbtxt')
-
-# Run inference on an image
-image_np = "hand.jpg" # Load your image
+# Convert the image to a tensor
 input_tensor = tf.convert_to_tensor(image_np)
-input_tensor = input_tensor[tf.newaxis, ...]
+input_tensor = input_tensor[tf.newaxis, ...]  # Add batch dimension
+
+# Get predictions from the model
 detections = model(input_tensor)
 
-# Visualize the results
-viz_utils.visualize_boxes_and_labels_on_image_array(
-    image_np,
-    detections['detection_boxes'][0].numpy(),
-    detections['detection_classes'][0].numpy().astype(np.int32),
-    detections['detection_scores'][0].numpy(),
-    # category_index,
-    use_normalized_coordinates=True,
-    max_boxes_to_draw=200,
-    min_score_thresh=.30,
-    agnostic_mode=False
-)
+# Print the detections (predicted values)
+print(detections)
 
+# Example: If you want to see specific details such as detection scores, boxes, or classes
+print("Detection Boxes:", detections["detection_boxes"].numpy())
+print("Detection Scores:", detections["detection_scores"].numpy())
+print("Detection Classes:", detections["detection_classes"].numpy())
