@@ -1,6 +1,6 @@
 # Hands in Hand
+## [Ballot Link](https://ballot.hackmit.org/project/qdino-ybstk-qtmne-cokef)
 *Infrared laser based ASL to Speech Converter using recycled tech*
-
 # How to Run
 - The application is lowkey kinda messy, but our `tensorflow` file is in the following directory (please use unix)
     - `best.pt`
