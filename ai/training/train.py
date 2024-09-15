@@ -1,31 +1,52 @@
-import tensorflow as tf
-import numpy as np
-from object_detection.utils import visualization_utils as viz_utils
-import cv2
-import os
+"""
+- [ ] pd load all the data, train and val 
+    -> no testing data cause that's for the demo night :)))
+- [ ] how to set custom labels in yolo?
+    -> check documentation
+- [ ] feed the training data into the model
+- [ ] check against validation
+- [ ] return model & score
+- [ ] data is in two forms, RGB and IR
+    -> final goal is the ensemble model
+    -> maybe i can combine the image?
+    -> overlay the images over each other?!!?
+    -> 
+"""
 
-PATH = os.getcwd()
-if os.path.exists(PATH):
-    model = tf.saved_model.load(PATH)
-else:
-    raise Exception("Model is missing!")
 
-image_path = "hand.jpg"
-image_np = cv2.imread(image_path)
-if image_np is None:
-    raise Exception(f"Image {image_path} not found!")
+class Train:
+    import pandas as pd
 
-# Convert the image to a tensor
-input_tensor = tf.convert_to_tensor(image_np)
-input_tensor = input_tensor[tf.newaxis, ...]  # Add batch dimension
+    def __init__(self):
+        from ultralytics import YOLO
+        import os
 
-# Get predictions from the model
-detections = model(input_tensor)
+        self.model = YOLO("yolov8n.pt")
+        path = os.path.join(os.getcwd(), "data.yaml")
+        if not os.path.exists(os.path.join(os.getcwd(), "data.yaml")):
+            print(path)
+            raise Exception("data.yaml missing, should be in the current directory")
 
-# Print the detections (predicted values)
-print(detections)
+    # Run batched inference on a list of images
 
-# Example: If you want to see specific details such as detection scores, boxes, or classes
-print("Detection Boxes:", detections["detection_boxes"].numpy())
-print("Detection Scores:", detections["detection_scores"].numpy())
-print("Detection Classes:", detections["detection_classes"].numpy())
+    def train(self, num_epochs=50):
+        # device = mps is for APPLE M series only
+        self.model.train(data="data.yaml", epochs=num_epochs, imgsz=640, device="mps")
+
+    def test(self):
+        # Process results list
+        results = self.model(["hands.jpg"])
+        for result in results:
+            boxes = result.boxes  # Boxes object for bounding box outputs
+            masks = result.masks  # Masks object for segmentation masks outputs
+            keypoints = result.keypoints  # Keypoints object for pose outputs
+            probs = result.probs  # Probs object for classification outputs
+            obb = result.obb  # Oriented boxes object for OBB outputs
+            result.show()  # display to screen
+            print(probs)
+
+
+if __name__ == "__main__":
+    t = Train()
+    t.train(2)
+    t.test()
