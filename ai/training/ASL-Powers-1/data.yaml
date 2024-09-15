@@ -1,0 +1,38 @@
+names:
+- A
+- B
+- C
+- D
+- E
+- F
+- FUCK YOU
+- G
+- H
+- I
+- K
+- L
+- M
+- N
+- O
+- P
+- Q
+- R
+- REACH
+- S
+- STARS
+- T
+- U
+- V
+- W
+- X
+- Y
+nc: 27
+roboflow:
+  license: CC BY 4.0
+  project: asl-powers
+  url: https://universe.roboflow.com/mit-itdvv/asl-powers/dataset/1
+  version: 1
+  workspace: mit-itdvv
+test: ../test/images
+train: train/images
+val: valid/images
